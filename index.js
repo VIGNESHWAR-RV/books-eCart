@@ -68,12 +68,12 @@ app.get("/",async(req,res)=>{
                   //query for search 
      //const search = await client.db("userDB").collection("books").find({title:{$regex:new RegExp("Java")}}).toArray();
 
-     res.send({home:{homeCategories:homeCategories,
+     res.send({homeCategories:homeCategories,
                bestSellers:bestSellers,
                newArrivals:newArrivals,
                awardWinners:awardWinners,
                staffPicks:staffPicks
-              }});
+              });
 
 
 

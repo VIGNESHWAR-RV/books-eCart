@@ -1,6 +1,8 @@
 import express from "express";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
+import cors from "cors";
+
 dotenv.config();
 const app = express();
 
@@ -14,6 +16,9 @@ async function createConnection() {
     return client;
 }
 const client = await createConnection();
+
+app.use(express.json()); //middleWare
+app.use(cors());
 
 app.get("/",async(req,res)=>{
 

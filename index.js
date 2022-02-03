@@ -89,56 +89,61 @@ app.get("/",async(req,res)=>{
  })
 
         //on-typing
-//  app.get("/",async(req,res)=>{
-//      const query = req.query;
-//      let search = [];
-//      if(query.authors){
+ app.get("/search",async(req,res)=>{
+     const query = req.query;
+     let search = [];
+     if(query.authors){
 
-//         search = await client.db("userDB")
-//                              .collection("books")
-//                              .aggregate([{$unwind:'$authors'},{$match:{authors:{$regex:`^${query.authors}`,$options:"i"}}},{$group:{_id:'$authors'}}])
-//                              .sort({authors: -1})
-//                              .toArray();
+        search = await client.db("userDB")
+                             .collection("books")
+                             .aggregate([{$unwind:'$authors'},{$match:{authors:{$regex:`^${query.authors}`,$options:"i"}}},{$group:{_id:'$authors'}}])
+                             .sort({authors: -1})
+                             .toArray();
 
-//      }
-//      if(query.title){
+     }
+     if(query.title){
 
-//         search = await client.db("userDB")
-//                              .collection("books")
-//                              .aggregate([{$match:{title:{$regex:`${query.title}`,$options:"i"}}}])
-//                              .project({_id:0,title:1})
-//                              .sort({title:1})
-//                              .toArray();
+        search = await client.db("userDB")
+                             .collection("books")
+                             .aggregate([{$match:{title:{$regex:`${query.title}`,$options:"i"}}}])
+                             .project({_id:0,title:1})
+                             .sort({title:1})
+                             .toArray();
 
-//      }
-//      if(query.isbn){
+     }
+     if(query.isbn){
+        query.isbn = +query.isbn;
+        search = await client.db("userDB")
+                             .collection("books")
+                             .aggregate([{$match:{isbn:{$regex:`^${query.isbn}`,$options:"i"}}}])
+                             .project({_id:0,isbn:1})
+                             .sort({isbn:1})
+                             .toArray();
 
-//         search = await client.db("userDB")
-//                              .collection("books")
-//                              .aggregate([{$match:{isbn:{$regex:`^${query.isbn}`,$options:"i"}}}])
-//                              .project({_id:0,isbn:1})
-//                              .sort({isbn:1})
-//                              .toArray();
-
-//      }
+     }
     
-//      res.send({result:search})
-//  })
+     res.send({result:search})
+ })
 
         //categories
  app.get("/:id",async(req,res)=>{
      const param = req.params;
-    //  if((param["id"]).includes("&")){
-    //      const categories = (param["id"]).split("&");
-         //res.send(param);
-    // }
-      
+     if((param["id"]).includes("_")){
+         const Book = (param["id"]).split("_");
+         const requiredSearch = `${Book[0]}:"${Book[1]}"`;
+         console.log(requiredSearch);
+         const specificBook = await client.db("userDB")
+                                          .collection("books")
+                                          .find({requiredSearch})
+                                          .toArray();
+        return res.send(specificBook);
+    }
+   
     const specificCategory = await client.db("userDB").collection("books")
                                          .find({categories:param.id})
                                          .toArray();
-
      res.send(specificCategory);
-
+  
  })
 
         //authors
